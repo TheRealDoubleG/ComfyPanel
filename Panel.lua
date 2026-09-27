@@ -219,7 +219,7 @@ function A:GetAFKText()
     end
 
     self.afkDetectedAt = nil
-    if idle < IDLE_DISPLAY_AFTER then return "AFK: aktiv" end
+    if idle < IDLE_DISPLAY_AFTER then return self:T("AFK_ACTIVE") end
 
     local untilAFK = math.max(0, AUTO_AFK_SECONDS - idle)
     local untilLogout = math.max(0, AUTO_AFK_SECONDS + AFK_LOGOUT_SECONDS - idle)
@@ -248,21 +248,21 @@ function A:GetModuleText(id)
     local record = self:GetCharacterRecord()
 
     if id == "money" then
-        return "Gold: " .. FormatMoney(record.money or 0)
+        return self:T("MONEY_SHORT") .. ": " .. FormatMoney(record.money or 0)
     elseif id == "bags" then
         local free, total = tonumber(record.bagFree) or 0, tonumber(record.bagTotal) or 0
-        if c.bagShowMax then return string.format("Bags: %d/%d free", free, total) end
-        return string.format("Bags: %d free", free)
+        if c.bagShowMax then return string.format("%s: %d/%d", self:T("BAGS_SHORT"), free, total) end
+        return string.format("%s: %d", self:T("BAGS_SHORT"), free)
     elseif id == "playtime" then
         local parts = {}
         if c.playtimeShowSession then parts[#parts + 1] = "S " .. FormatDuration(self:GetSessionPlayed()) end
         if c.playtimeShowCharacter then parts[#parts + 1] = "C " .. FormatDuration(self:GetCurrentTotalPlayed()) end
         if c.playtimeShowAccount then parts[#parts + 1] = "Σ " .. FormatDuration(self:GetAccountPlayedTotal()) end
         if #parts == 0 then parts[1] = "S " .. FormatDuration(self:GetSessionPlayed()) end
-        return "Play: " .. table.concat(parts, " / ")
+        return self:T("PLAY_SHORT") .. ": " .. table.concat(parts, " / ")
     elseif id == "kills" then
         local session, lifetime = CurrentPvPKills()
-        return string.format("HK: %d / %d", session, lifetime)
+        return string.format("%s: %d / %d", self:T("KILLS_SHORT"), session, lifetime)
     elseif id == "afk" then
         return self:GetAFKText()
     elseif id == "clock" then
