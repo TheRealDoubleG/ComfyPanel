@@ -59,6 +59,10 @@ local EN={
     DB_LOGIN_NOTE = "Characters are added to the ComfyPanel database after you log in with them at least once.",
     AFK_ESTIMATE_NOTE = "Idle is a local estimate. WoW marks you AFK after about 5 minutes without interaction and normally returns an AFK character to character select after about 30 more minutes.",
     AFK_ACTIVE = "AFK: active",
+    MONEY_SHORT = "Gold",
+    BAGS_SHORT = "Bags",
+    PLAY_SHORT = "Play",
+    KILLS_SHORT = "HK",
     FOREVER_NOTE = "Modules can be unlocked and dragged horizontally. Background opacity can be set to 0%.",
 }
 local DE={
@@ -119,6 +123,10 @@ local DE={
     DB_LOGIN_NOTE = "Charaktere werden in der ComfyPanel-Datenbank gespeichert, nachdem du dich mindestens einmal mit ihnen eingeloggt hast.",
     AFK_ESTIMATE_NOTE = "Idle ist eine lokale Schätzung. WoW setzt dich nach ungefähr 5 Minuten ohne Interaktion auf AFK und schickt einen AFK-Charakter normalerweise etwa 30 Minuten später zur Charakterauswahl.",
     AFK_ACTIVE = "AFK: aktiv",
+    MONEY_SHORT = "Gold",
+    BAGS_SHORT = "Taschen",
+    PLAY_SHORT = "Zeit",
+    KILLS_SHORT = "HK",
     FOREVER_NOTE = "Anzeigen können entsperrt und horizontal verschoben werden. Die Hintergrund-Deckkraft kann auf 0% gesetzt werden.",
 }
 local S=de and DE or EN
