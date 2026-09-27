@@ -3,7 +3,7 @@
 ## Notes: Minimal modular information panel for WoW Forever.
 ## Notes-deDE: Minimale modulare Informationsleiste für WoW Forever.
 ## Author: TheRealDoubleG
-## Version: 0.4
+## Version: 0.5
 ## SavedVariables: ComfyPanelDB, ComfyPanelStatsDB
 ## OptionalDeps: ComfyData
 ## X-Website: https://github.com/TheRealDoubleG/ComfyPanel
