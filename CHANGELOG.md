@@ -1,5 +1,12 @@
 # ComfyPanel Changelog
 
+## 0.4 Beta – 27.09.2026
+- Added optional ComfyData integration as the preferred shared character database.
+- Moved idle/AFK display from ComfyPanel to ComfyXP.
+- Kept ComfyPanelStatsDB as a standalone fallback.
+- Avoided duplicate played-time requests while ComfyData is active.
+
+
 ## 0.3 Beta – 27.09.2026
 - Added a true 0% panel background opacity.
 - Added configurable top/bottom edge offset to avoid minimap/zone-strip overlap.
