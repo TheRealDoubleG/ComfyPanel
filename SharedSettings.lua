@@ -213,6 +213,7 @@ function CC:NotifyStorageProfileChanged()
     if self.UpdateMinimapAppearance then self:UpdateMinimapAppearance() end
     if self.RefreshBars then self:RefreshBars() end
     if self.RefreshAllCooldowns then self:RefreshAllCooldowns() end
+    if self.RefreshFeature then self:RefreshFeature() end
     if self.UpdatePreview then self:UpdatePreview() end
     if self.RefreshOptions then self:RefreshOptions() end
     if self.RefreshSharedSettingsPage then self:RefreshSharedSettingsPage() end
