@@ -147,6 +147,34 @@ function A:RefreshOptions()
     if self.RefreshSharedSettingsPage then self:RefreshSharedSettingsPage() end
 end
 
+function A:RegisterBlizzardSettingsCategory()
+    if self.settingsCategory then return end
+    if not (Settings and Settings.RegisterCanvasLayoutCategory and Settings.RegisterAddOnCategory) then return end
+
+    local canvas = CreateFrame("Frame")
+    local isDE = type(GetLocale) == "function" and GetLocale() == "deDE"
+
+    local title = canvas:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    title:SetPoint("TOPLEFT", 16, -16)
+    title:SetText("ComfyPanel")
+
+    local desc = canvas:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    desc:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -12)
+    desc:SetWidth(520)
+    desc:SetJustifyH("LEFT")
+    desc:SetText(isDE
+        and "Öffnet das vollständige ComfyPanel-Einstellungsfenster der Comfy Suite."
+        or "Opens the full ComfyPanel settings window for the Comfy Suite.")
+
+    CreateButton(canvas, isDE and "Einstellungen öffnen" or "Open settings", 16, -90, 220, function()
+        A:ShowOptions()
+    end)
+
+    local category = Settings.RegisterCanvasLayoutCategory(canvas, "ComfyPanel")
+    Settings.RegisterAddOnCategory(category)
+    self.settingsCategory = category
+end
+
 function A:InitializeOptions()
     if self.optionsFrame then return end
 
@@ -255,6 +283,7 @@ function A:InitializeOptions()
     self:ApplySharedWindowSettings()
     SelectTab(1)
     self:RefreshOptions()
+    self:RegisterBlizzardSettingsCategory()
 end
 
 function A:ShowOptions()
