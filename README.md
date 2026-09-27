@@ -1,6 +1,6 @@
 # ComfyPanel
 
-**Version 0.1 – Beta**  
+**Version 0.2 – Beta**  
 **Target: World of Warcraft: Forever 1.60.1 / Interface 16001**  
 Author: **TheRealDoubleG**  
 Discord: **the.real.double.g**
