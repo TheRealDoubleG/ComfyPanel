@@ -1,6 +1,6 @@
 # ComfyPanel
 
-**Version 0.2 – Beta**  
+**Version 0.3 – Beta**  
 **Target: World of Warcraft: Forever 1.60.1 / Interface 16001**  
 Author: **TheRealDoubleG**  
 Discord: **the.real.double.g**
@@ -13,11 +13,25 @@ A lightweight information strip for money, bag space, time, FPS and latency. It 
 
 ComfyPanel is developed specifically for **WoW: Forever**. Retail/Modern WoW, Midnight and WoW Classic are not compatibility targets.
 
+## 0.3 Beta
+
+- Panel background opacity now supports a true 0%.
+- Configurable distance from the screen edge so the panel does not have to overlap the minimap/zone strip.
+- Unlock mode lets every panel module be dragged horizontally; dragging automatically switches to custom positioning.
+- One-click left, center, right and custom module alignment.
+- Bag display can show free slots only or free / maximum slots.
+- Added account-wide ComfyPanelStatsDB for known characters.
+- Money tooltip shows stored money for all known characters.
+- Bag tooltip shows free / maximum bag slots for all known characters.
+- Playtime module supports login-session, current-character total and all-known-characters total.
+- Playtime tooltip lists each known character separately.
+- PvP honorable-kill module shows current PvP-session and lifetime kills; tooltip lists lifetime kills for all known characters.
+- Local idle display starts after 5 seconds, then shows estimated AFK and auto-logout timing. The actual UnitIsAFK state takes priority once WoW marks the character AFK.
+- Character data is learned when each character is logged in with ComfyPanel at least once.
+
 ## 0.1 Beta
 
-- Added an independent top/bottom information panel.
-- Added money, free bag slots, clock, FPS and home/world latency modules.
-- Avoids repositioning Blizzard UI frames.
+- Initial information panel with money, bag space, clock, FPS and latency.
 
 ## Design notes
 
