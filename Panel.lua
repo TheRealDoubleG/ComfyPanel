@@ -1,7 +1,7 @@
 ComfyPanel = ComfyPanel or {}
 local A = ComfyPanel
 
-local MODULE_ORDER = {"money","bags","playtime","kills","afk","clock","fps","latency"}
+local MODULE_ORDER = {"money","bags","playtime","kills","clock","fps","latency"}
 local MODULE_GAP = 12
 local IDLE_DISPLAY_AFTER = 5
 local AUTO_AFK_SECONDS = 300
@@ -106,6 +106,12 @@ local function CurrentPvPKills()
 end
 
 function A:EnsureStatsDB()
+    if type(ComfyData) == "table" and type(ComfyData.GetDB) == "function" then
+        self.statsDB = ComfyData:GetDB()
+        self.usingComfyData = true
+        return
+    end
+    self.usingComfyData = false
     if type(ComfyPanelStatsDB) ~= "table" then ComfyPanelStatsDB = {} end
     ComfyPanelStatsDB.version = 1
     ComfyPanelStatsDB.characters = ComfyPanelStatsDB.characters or {}
@@ -114,6 +120,12 @@ end
 
 function A:GetCharacterRecord()
     self:EnsureStatsDB()
+    if self.usingComfyData and type(ComfyData.GetCurrentCharacter) == "function" then
+        local record = ComfyData:GetCurrentCharacter()
+        self.currentCharacterKey = type(ComfyData.GetCurrentKey) == "function" and ComfyData:GetCurrentKey() or CharacterIdentity()
+        self.currentCharacter = record
+        return record
+    end
     local key, name, realm = CharacterIdentity()
     local record = self.statsDB.characters[key]
     if type(record) ~= "table" then
@@ -134,10 +146,16 @@ function A:GetCharacterRecord()
 end
 
 function A:GetSessionPlayed()
+    if self.usingComfyData and type(ComfyData.GetSessionSeconds) == "function" then
+        return ComfyData:GetSessionSeconds()
+    end
     return math.max(0, Now() - (self.sessionStart or Now()))
 end
 
 function A:GetCurrentTotalPlayed()
+    if self.usingComfyData and type(ComfyData.GetCurrentTotalPlayed) == "function" then
+        return ComfyData:GetCurrentTotalPlayed()
+    end
     local sessionElapsed = self:GetSessionPlayed()
     if self.playedBase ~= nil then
         return math.max(0, self.playedBase + sessionElapsed - (self.playedBaseSessionElapsed or 0))
@@ -147,6 +165,10 @@ end
 
 function A:GetAccountPlayedTotal()
     self:EnsureStatsDB()
+    if self.usingComfyData and type(ComfyData.GetAccountTotals) == "function" then
+        local totals = ComfyData:GetAccountTotals()
+        return tonumber(totals and totals.totalPlayed) or 0
+    end
     local total = 0
     for key, record in pairs(self.statsDB.characters) do
         if key == self.currentCharacterKey then
@@ -160,6 +182,10 @@ end
 
 function A:GetAccountLifetimeKills()
     self:EnsureStatsDB()
+    if self.usingComfyData and type(ComfyData.GetAccountTotals) == "function" then
+        local totals = ComfyData:GetAccountTotals()
+        return tonumber(totals and totals.lifetimeKills) or 0
+    end
     local total = 0
     for key, record in pairs(self.statsDB.characters) do
         if key == self.currentCharacterKey then
@@ -173,6 +199,14 @@ function A:GetAccountLifetimeKills()
 end
 
 function A:UpdateCharacterSnapshot(includeBags)
+    self:EnsureStatsDB()
+    if self.usingComfyData and type(ComfyData.RefreshCurrent) == "function" then
+        ComfyData:RefreshCurrent(includeBags and true or false, false)
+        self.statsDB = ComfyData:GetDB()
+        self.currentCharacterKey = ComfyData:GetCurrentKey()
+        self.currentCharacter = ComfyData:GetCurrentCharacter()
+        return self.currentCharacter
+    end
     local record = self:GetCharacterRecord()
 
     if type(GetMoney) == "function" then
@@ -236,7 +270,6 @@ function A:IsModuleEnabled(id)
     if id == "bags" then return c.showBags end
     if id == "playtime" then return c.showPlaytime end
     if id == "kills" then return c.showKills end
-    if id == "afk" then return c.showAFK end
     if id == "clock" then return c.showTime end
     if id == "fps" then return c.showFPS end
     if id == "latency" then return c.showLatency end
@@ -263,9 +296,7 @@ function A:GetModuleText(id)
     elseif id == "kills" then
         local session, lifetime = CurrentPvPKills()
         return string.format("%s: %d / %d", self:T("KILLS_SHORT"), session, lifetime)
-    elseif id == "afk" then
-        return self:GetAFKText()
-    elseif id == "clock" then
+        elseif id == "clock" then
         return date and date("%H:%M") or "--:--"
     elseif id == "fps" then
         return type(GetFramerate) == "function" and string.format("FPS %.0f", tonumber(GetFramerate()) or 0) or "FPS —"
@@ -343,12 +374,6 @@ function A:ShowModuleTooltip(id, owner)
             local value = item.key == self.currentCharacterKey and lifetime or (tonumber(r.lifetimeKills) or 0)
             GameTooltip:AddDoubleLine((r.name or "?") .. (r.realm and r.realm ~= "" and (" - " .. r.realm) or ""), tostring(value), 1,1,1, 1,1,1)
         end
-
-    elseif id == "afk" then
-        GameTooltip:AddLine(self:T("AFK_TOOLTIP"), 1, 0.82, 0)
-        GameTooltip:AddLine(self:GetAFKText(), 1, 1, 1)
-        GameTooltip:AddLine(" ")
-        GameTooltip:AddLine(self:T("AFK_ESTIMATE_NOTE"), 0.7, 0.7, 0.7, true)
 
     else
         return
@@ -541,22 +566,11 @@ function A:InitializeFeature()
 
     self.sessionStart = Now()
     self.sessionStartStoredTotal = tonumber(record.totalPlayed) or 0
-    self.lastActivity = Now()
     self.playedRequested = false
     self._playedRequestAt = Now() + 3
 
     self:CreatePanel()
     self:UpdateCharacterSnapshot(true)
-
-    if type(GetCursorPosition) == "function" then
-        local x, y = GetCursorPosition()
-        self._lastCursorX, self._lastCursorY = x, y
-    end
-
-    if WorldFrame and type(WorldFrame.HookScript) == "function" then
-        pcall(WorldFrame.HookScript, WorldFrame, "OnMouseDown", function() A:ResetIdleTimer() end)
-        pcall(WorldFrame.HookScript, WorldFrame, "OnMouseWheel", function() A:ResetIdleTimer() end)
-    end
 
     local e = CreateFrame("Frame")
     self.panelEvents = e
@@ -567,10 +581,6 @@ function A:InitializeFeature()
         "PLAYER_LEVEL_UP",
         "TIME_PLAYED_MSG",
         "PLAYER_PVP_KILLS_CHANGED",
-        "PLAYER_FLAGS_CHANGED",
-        "PLAYER_STARTED_MOVING",
-        "PLAYER_STOPPED_MOVING",
-        "UNIT_SPELLCAST_SENT",
         "PLAYER_LOGOUT",
     }
     for _, event in ipairs(events) do pcall(e.RegisterEvent, e, event) end
@@ -581,12 +591,7 @@ function A:InitializeFeature()
             return
         end
 
-        if event == "PLAYER_STARTED_MOVING" or event == "PLAYER_STOPPED_MOVING" then
-            A:ResetIdleTimer()
-        elseif event == "UNIT_SPELLCAST_SENT" then
-            local unit = ...
-            if unit == "player" then A:ResetIdleTimer() end
-        elseif event == "PLAYER_ENTERING_WORLD" then
+        if event == "PLAYER_ENTERING_WORLD" then
             A:GetCharacterRecord()
             A:UpdateCharacterSnapshot(true)
         elseif event == "PLAYER_MONEY" or event == "BAG_UPDATE_DELAYED" or event == "PLAYER_LEVEL_UP" or event == "PLAYER_PVP_KILLS_CHANGED" then
@@ -600,19 +605,6 @@ function A:InitializeFeature()
 
     e:SetScript("OnUpdate", function(self, elapsed)
         self.elapsed = (self.elapsed or 0) + (tonumber(elapsed) or 0)
-        self.cursorElapsed = (self.cursorElapsed or 0) + (tonumber(elapsed) or 0)
-
-        if self.cursorElapsed >= 0.25 then
-            self.cursorElapsed = 0
-            if type(GetCursorPosition) == "function" then
-                local x, y = GetCursorPosition()
-                if A._lastCursorX ~= nil and (math.abs(x - A._lastCursorX) > 1 or math.abs(y - A._lastCursorY) > 1) then
-                    A:ResetIdleTimer()
-                end
-                A._lastCursorX, A._lastCursorY = x, y
-            end
-        end
-
         if not A.playedRequested and A._playedRequestAt and Now() >= A._playedRequestAt then
             A:RequestPlayedTimeOnce()
         end
@@ -671,10 +663,6 @@ function A:BuildGeneralOptions(page, ui)
     ui.CreateCheck(page, self:T("SHOW_KILLS"), 20, -370,
         function() return A.db.panel.showKills end,
         function(v) A.db.panel.showKills = v end)
-
-    ui.CreateCheck(page, self:T("SHOW_AFK"), 20, -405,
-        function() return A.db.panel.showAFK end,
-        function(v) A.db.panel.showAFK = v end)
 
     ui.CreateCheck(page, self:T("SHOW_TIME"), 390, -90,
         function() return A.db.panel.showTime end,
