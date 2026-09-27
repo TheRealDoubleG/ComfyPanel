@@ -1,5 +1,9 @@
 # ComfyPanel Changelog
 
+## 0.5 Beta – 28.09.2026
+- Registered ComfyPanel in Blizzard's native AddOns settings list with a button to open the full Comfy settings window.
+
+
 ## 0.4 Beta – 27.09.2026
 - Added optional ComfyData integration as the preferred shared character database.
 - Moved idle/AFK display from ComfyPanel to ComfyXP.
