@@ -542,12 +542,14 @@ function A:RefreshFeature()
 end
 
 function A:RequestPlayedTimeOnce()
+    if self.usingComfyData then return end
     if self.playedRequested or type(RequestTimePlayed) ~= "function" then return end
     self.playedRequested = true
     pcall(RequestTimePlayed)
 end
 
 function A:HandleTimePlayed(totalTimePlayed)
+    if self.usingComfyData then return end
     totalTimePlayed = tonumber(totalTimePlayed)
     if not totalTimePlayed then return end
 
