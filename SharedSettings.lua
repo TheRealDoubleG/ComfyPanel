@@ -323,19 +323,19 @@ function CC:ApplySharedWindowSettings()
     local showBorder = ui.showWindowBorder ~= false
     local backgroundAlpha = math.max(0, math.min(100, tonumber(ui.backgroundAlpha) or 92)) / 100
 
+    -- The Blizzard frame background is hidden permanently and replaced by one
+    -- dedicated Comfy background texture. This keeps border visibility and
+    -- background opacity independent from each other.
     SetShownSafe(frame.NineSlice, showBorder)
-    SetShownSafe(frame.Bg, showBorder)
     SetShownSafe(frame.TitleBg, showBorder)
     SetShownSafe(frame.TopTileStreaks, showBorder)
     SetShownSafe(frame.Inset, showBorder)
 
-    frame.__comfyMinimalBackground:SetShown(not showBorder)
-    frame.__comfyMinimalBackground:SetAlpha(backgroundAlpha)
+    if frame.Bg and frame.Bg.Hide then frame.Bg:Hide() end
+    if frame.Inset and frame.Inset.Bg and frame.Inset.Bg.Hide then frame.Inset.Bg:Hide() end
 
-    if showBorder then
-        if frame.Bg and frame.Bg.SetAlpha then frame.Bg:SetAlpha(backgroundAlpha) end
-        if frame.Inset and frame.Inset.Bg and frame.Inset.Bg.SetAlpha then frame.Inset.Bg:SetAlpha(backgroundAlpha) end
-    end
+    frame.__comfyMinimalBackground:SetShown(backgroundAlpha > 0)
+    frame.__comfyMinimalBackground:SetAlpha(backgroundAlpha)
 end
 
 function CC:ResetOptionsWindowPosition()
@@ -474,13 +474,13 @@ function CC:BuildSharedSettingsPage(page)
         function() return CC:GetActiveStorageProfileKey() end,
         function(value) CC:SetActiveStorageProfile(value) end)
 
-    AddText(L("Profil kopieren von", "Copy profile from"), 330, -78, "GameFontHighlightSmall")
+    AddText(L("Profil kopieren von", "Copy profile from"), 340, -78, "GameFontHighlightSmall")
     self.sharedCopySourceKey = self:GetCharacterProfileKey()
-    self.sharedCopyDropdown = AddDropdown(315, -90, 250,
+    self.sharedCopyDropdown = AddDropdown(325, -90, 220,
         function() return CC:GetCopySourceStorageProfiles() end,
         function() return CC.sharedCopySourceKey end,
         function(value) CC.sharedCopySourceKey = value end)
-    AddButton(L("Laden / Kopieren", "Load / copy"), 590, -88, 130, function()
+    AddButton(L("Laden / Kopieren", "Load / copy"), 590, -88, 120, function()
         CC:CopyStorageProfileToCharacter(CC.sharedCopySourceKey)
     end)
 
