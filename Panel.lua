@@ -722,17 +722,17 @@ function A:BuildGeneralOptions(page, ui)
         A:ResetModulePositions()
     end)
 
-    ui.CreateSlider(page, self:T("HEIGHT"), 16, 36, 1, 35, -475,
+    ui.CreateSlider(page, self:T("HEIGHT"), 16, 36, 1, 35, -455,
         function() return A.db.panel.height end,
         function(v) A.db.panel.height = math.floor(v + 0.5) end,
         function(v) return math.floor(v + 0.5) .. " px" end)
 
-    ui.CreateSlider(page, self:T("OPACITY"), 0, 100, 5, 365, -475,
+    ui.CreateSlider(page, self:T("OPACITY"), 0, 100, 5, 365, -455,
         function() return A.db.panel.opacity end,
         function(v) A.db.panel.opacity = math.floor(v + 0.5) end,
         function(v) return math.floor(v + 0.5) .. "%" end)
 
-    ui.CreateSlider(page, self:T("PANEL_OFFSET"), 0, 80, 1, 35, -535,
+    ui.CreateSlider(page, self:T("PANEL_OFFSET"), 0, 80, 1, 35, -515,
         function() return A.db.panel.offset end,
         function(v) A.db.panel.offset = math.floor(v + 0.5) end,
         function(v) return math.floor(v + 0.5) .. " px" end)
