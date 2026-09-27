@@ -1,6 +1,6 @@
 # ComfyPanel
 
-**Version 0.3 – Beta**  
+**Version 0.4 – Beta**  
 **Target: World of Warcraft: Forever 1.60.1 / Interface 16001**  
 Author: **TheRealDoubleG**  
 Discord: **the.real.double.g**
@@ -12,6 +12,13 @@ Minimal modular information panel for WoW Forever.
 A lightweight information strip for money, bag space, time, FPS and latency. It does not try to reproduce Titan Panel's plugin ecosystem.
 
 ComfyPanel is developed specifically for **WoW: Forever**. Retail/Modern WoW, Midnight and WoW Classic are not compatibility targets.
+
+## 0.4 Beta
+
+- ComfyPanel now prefers the shared ComfyData service for account-wide character data.
+- AFK/idle display moved to ComfyXP, where it belongs next to the XP/session information.
+- Existing ComfyPanelStatsDB remains as a fallback for standalone installs without ComfyData.
+- ComfyData stores character snapshots outside the AddOns folder through WoW SavedVariables, so addon-folder updates do not overwrite the database.
 
 ## 0.3 Beta
 
